@@ -1,0 +1,33 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.2.32314.265
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FileCloud.Client", "FileCloud\FileCloud.Client\FileCloud.Client.csproj", "{51D5DE8F-1569-467D-A89F-1A080930E1BD}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FileCloud.Server", "FileCloud\FileCloud.Server\FileCloud.Server.csproj", "{A60E3CC8-D395-434A-86D8-72AAE0A8BEFE}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{51D5DE8F-1569-467D-A89F-1A080930E1BD}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{51D5DE8F-1569-467D-A89F-1A080930E1BD}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{51D5DE8F-1569-467D-A89F-1A080930E1BD}.Debug|Any CPU.Deploy.0 = Debug|Any CPU
+		{51D5DE8F-1569-467D-A89F-1A080930E1BD}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{51D5DE8F-1569-467D-A89F-1A080930E1BD}.Release|Any CPU.Build.0 = Release|Any CPU
+		{51D5DE8F-1569-467D-A89F-1A080930E1BD}.Release|Any CPU.Deploy.0 = Release|Any CPU
+		{A60E3CC8-D395-434A-86D8-72AAE0A8BEFE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A60E3CC8-D395-434A-86D8-72AAE0A8BEFE}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A60E3CC8-D395-434A-86D8-72AAE0A8BEFE}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A60E3CC8-D395-434A-86D8-72AAE0A8BEFE}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {AA116882-9470-4C69-877F-84D8A859EFF1}
+	EndGlobalSection
+EndGlobal
