@@ -30,7 +30,7 @@ builder.Services.AddDbContext<FileCloudDbContext>(config =>
 
 builder.Services.AddControllersWithViews();
 
-builder.Services.AddSingleton<IAuthManager, AuthManager>();
+builder.Services.AddScoped<IAuthManager, AuthManager>();
 
 builder.Services.AddAuthentication(cfg =>
     {
@@ -90,24 +90,46 @@ using (var serviceScope = app.Services.CreateScope())
     var services = serviceScope.ServiceProvider;
 
     using var userManager = services.GetRequiredService<UserManager<User>>();
+    using var roleManager = services.GetRequiredService<RoleManager<Role>>();
 
-    var oldUser = userManager.FindByNameAsync("admin").GetAwaiter().GetResult();
+    var user = await userManager.FindByNameAsync("admin");
 
-    if (oldUser == null)
+    if (user == null)
     {
-        var user = new User
+        user = new User
         {
             UserName = "admin",
             FirstName = "Default",
+            Email = "admin@site.local",
             LastName = "Default Last"
         };
 
-        var task = userManager.CreateAsync(user, "1");
-        var result = task.GetAwaiter().GetResult();
+        var result = await userManager.CreateAsync(user, "1");
 
-        if (!result.Succeeded)
+        if (result.Succeeded)
         {
             await userManager.AddClaimAsync(user, new Claim(ClaimTypes.Role, "Administrator"));
+
+            var role = await roleManager.Roles.FirstOrDefaultAsync(role => role.Name == "Administrator");
+
+            if(role == null)
+            {
+                var newRole = new Role
+                {
+                    Name = "Administrator",
+                    NormalizedName = "Администратор",
+                };
+
+                var roleResult = await roleManager.CreateAsync(newRole);
+
+                if(roleResult.Succeeded)
+                {
+                    if (!await userManager.IsInRoleAsync(user, "Administrator"))
+                    {
+                        await userManager.AddToRoleAsync(user, "Administrator");
+                    }
+                }
+            }
         }
     }
 }
