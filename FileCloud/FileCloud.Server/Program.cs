@@ -15,7 +15,8 @@ var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddDbContext<FileCloudDbContext>(config =>
 {
-    config.UseInMemoryDatabase("Memory");
+    //config.UseInMemoryDatabase("Memory");
+    config.UseSqlServer(builder.Configuration.GetConnectionString("FileCloudConnection"));
 })
     .AddIdentity<User, Role>(config =>
     {
@@ -90,19 +91,24 @@ using (var serviceScope = app.Services.CreateScope())
 
     using var userManager = services.GetRequiredService<UserManager<User>>();
 
-    var user = new User
-    {
-        UserName = "admin",
-        FirstName = "Default",
-        LastName = "Default Last"
-    };
+    var oldUser = userManager.FindByNameAsync("admin").GetAwaiter().GetResult();
 
-    var task = userManager.CreateAsync(user, "1");
-    var result = task.GetAwaiter().GetResult();
-
-    if(!result.Succeeded)
+    if (oldUser == null)
     {
-        await userManager.AddClaimAsync(user, new Claim(ClaimTypes.Role, "Administrator"));
+        var user = new User
+        {
+            UserName = "admin",
+            FirstName = "Default",
+            LastName = "Default Last"
+        };
+
+        var task = userManager.CreateAsync(user, "1");
+        var result = task.GetAwaiter().GetResult();
+
+        if (!result.Succeeded)
+        {
+            await userManager.AddClaimAsync(user, new Claim(ClaimTypes.Role, "Administrator"));
+        }
     }
 }
 
@@ -112,6 +118,8 @@ if (app.Environment.IsDevelopment())
     app.UseSwagger();
     app.UseSwaggerUI();
 }
+
+
 
 app.UseHttpsRedirection();
 
