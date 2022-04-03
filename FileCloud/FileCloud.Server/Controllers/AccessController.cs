@@ -1,8 +1,6 @@
 ﻿using FileCloud.Server.Auth;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using System.Net;
 
 namespace FileCloud.Server.Controllers
 {
@@ -24,11 +22,17 @@ namespace FileCloud.Server.Controllers
             return "";
         }
 
-        [AllowAnonymous]
         [HttpGet("Authenticate")]
-        public string Authenticate()
+        public async Task<ActionResult<string>> Authenticate(string userName, string password)
         {
-            return _authManager.Auth();
+            try
+            {
+                return await _authManager.AuthAsync(userName, password);
+            }
+            catch(Exception ex)
+            {
+                return Unauthorized(ex.Message);
+            }
         }
     }
 }

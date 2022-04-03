@@ -2,6 +2,6 @@
 {
     public interface IAuthManager
     {
-        string Auth();
+        Task<string> AuthAsync(string userName, string password);
     }
 }
