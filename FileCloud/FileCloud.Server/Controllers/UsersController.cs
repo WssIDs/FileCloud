@@ -6,11 +6,11 @@ namespace FileCloud.Server.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class AccessController : ControllerBase
+    public class UsersController : ControllerBase
     {
         private readonly IAuthManager _authManager;
 
-        public AccessController(IAuthManager authManager)
+        public UsersController(IAuthManager authManager)
         {
             _authManager = authManager;
         }
