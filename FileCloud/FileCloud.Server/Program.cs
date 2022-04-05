@@ -1,6 +1,8 @@
 using FileCloud.Data.Entities;
 using FileCloud.Data.Store;
-using FileCloud.Server.Auth;
+using FileCloud.Server.Abstractions;
+using FileCloud.Server.Models.Auth;
+using FileCloud.Server.Services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
@@ -30,7 +32,7 @@ builder.Services.AddDbContext<FileCloudDbContext>(config =>
 
 builder.Services.AddControllersWithViews();
 
-builder.Services.AddScoped<IAuthManager, AuthManager>();
+builder.Services.AddScoped<IUserService, UserService>();
 
 builder.Services.AddAuthentication(cfg =>
     {
@@ -46,7 +48,8 @@ builder.Services.AddAuthentication(cfg =>
         {
             ValidIssuer = TokenConstants.Issuer,
             ValidAudience = TokenConstants.Audience,
-            IssuerSigningKey = key
+            IssuerSigningKey = key,
+            ClockSkew = TimeSpan.Zero
         };
     });
 
