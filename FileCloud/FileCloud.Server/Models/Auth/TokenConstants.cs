@@ -1,4 +1,4 @@
-﻿namespace FileCloud.Server.Auth
+﻿namespace FileCloud.Server.Models.Auth
 {
     public static class TokenConstants
     {
