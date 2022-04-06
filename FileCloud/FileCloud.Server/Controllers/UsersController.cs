@@ -62,10 +62,9 @@ namespace FileCloud.Server.Controllers
         /// <summary>
         /// 
         /// </summary>
-        /// <param name="token"></param>
         /// <returns></returns>
         [Authorize]
         [HttpGet("GetToken")]
-        public void GetToken() => _userService.GetToken();
+        public AuthenticateTokenResponseModel GetToken() => _userService.GetToken();
     }
 }

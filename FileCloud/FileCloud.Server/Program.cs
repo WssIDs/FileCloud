@@ -32,6 +32,7 @@ builder.Services.AddDbContext<FileCloudDbContext>(config =>
 
 builder.Services.AddControllersWithViews();
 
+builder.Services.AddScoped<IJwtTokenManager, JwtTokenManager>();
 builder.Services.AddScoped<IUserService, UserService>();
 
 builder.Services.AddAuthentication(cfg =>

@@ -14,15 +14,18 @@ namespace FileCloud.Server.Services
     /// </summary>
     public class UserService : IUserService
     {
+        private readonly IJwtTokenManager _jwtTokenManager;
         private readonly UserManager<User> _userManager;
         private readonly RoleManager<Role> _roleManager;
 
         public UserService(
             UserManager<User> userManager,
-            RoleManager<Role> roleManager)
+            RoleManager<Role> roleManager,
+            IJwtTokenManager jwtTokenManager)
         {
             _userManager = userManager;
             _roleManager = roleManager;
+            _jwtTokenManager = jwtTokenManager;
         }
 
         public async Task<AuthenticateResponseModel> AuthAsync(AuthenticateRequestModel authenticateRequest)
@@ -57,7 +60,7 @@ namespace FileCloud.Server.Services
                     }
                 }
 
-                var jwtToken = GenerateJwtToken(claims, DateTime.UtcNow.AddMinutes(1));
+                var jwtToken = _jwtTokenManager.GenerateJwtToken(claims, DateTime.UtcNow.AddMinutes(1));
 
                 return new AuthenticateResponseModel
                 {
@@ -84,29 +87,6 @@ namespace FileCloud.Server.Services
             throw new NotImplementedException();
         }
 
-        public string GenerateJwtToken(List<Claim> claims, DateTime expires)
-        {
-            byte[] secretBytes = Encoding.UTF8.GetBytes(TokenConstants.SecretKey);
-            var key = new SymmetricSecurityKey(secretBytes);
-
-            var signingCredentials = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
-
-            var token = new JwtSecurityToken(
-                TokenConstants.Issuer,
-                TokenConstants.Audience,
-                claims,
-                notBefore: DateTime.UtcNow,
-                expires: expires,
-                signingCredentials: signingCredentials);
-
-            return new JwtSecurityTokenHandler().WriteToken(token);
-        }
-
-        public void GetToken()
-        {
-            //var jwtToken = new JwtSecurityTokenHandler().ReadJwtToken(token);
-
-            //return GenerateJwtToken(jwtToken.Claims, DateTime.UtcNow.AddMinutes(1));
-        }
+        public AuthenticateTokenResponseModel GetToken() => new() { Token = _jwtTokenManager.UpdateToken() };
     }
 }
