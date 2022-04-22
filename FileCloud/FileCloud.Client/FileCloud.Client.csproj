@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk.Razor">
+﻿<Project Sdk="Microsoft.NET.Sdk.Razor">
 
 	<PropertyGroup>
 		<TargetFrameworks>net6.0-android;net6.0-ios;net6.0-maccatalyst</TargetFrameworks>
@@ -34,9 +34,9 @@
 
 	<ItemGroup>
 		<!-- App Icon -->
-		<MauiIcon
-			Include="Resources\appicon.svg"
-			ForegroundFile="Resources\appiconfg.svg"
+		<MauiIcon 
+			Include="Resources\appicon.svg" 
+			ForegroundFile="Resources\appiconfg.svg" 
 			Color="#512BD4" />
 
 		<!-- Splash Screen -->
@@ -55,8 +55,8 @@
 
 	<ItemGroup Condition="$(TargetFramework.Contains('-windows'))">
 		<!-- Required - WinUI does not yet have buildTransitive for everything -->
-		<PackageReference Include="Microsoft.WindowsAppSDK" Version="1.0.0" />
-		<PackageReference Include="Microsoft.Graphics.Win2D" Version="1.0.0.30" />
+		<PackageReference Include="Microsoft.WindowsAppSDK" Version="1.1.0-preview2" />
+		<PackageReference Include="Microsoft.Graphics.Win2D" Version="1.0.1" />
 	</ItemGroup>
 
 	<PropertyGroup Condition="$(TargetFramework.Contains('-windows'))">
@@ -66,6 +66,11 @@
 
 	<ItemGroup>
 		<Content Remove="Properties\launchSettings.json" />
+	</ItemGroup>
+
+	<ItemGroup>
+	  <PackageReference Include="Microsoft.AspNetCore.Components.DataAnnotations.Validation" Version="3.2.0-rc1.20223.4" />
+	  <PackageReference Include="Microsoft.Extensions.Http" Version="7.0.0-preview.3.22175.4" />
 	</ItemGroup>
 
 </Project>
