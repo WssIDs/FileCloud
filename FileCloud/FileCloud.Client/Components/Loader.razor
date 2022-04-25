@@ -1,0 +1,33 @@
+﻿@if (IsLoading)
+{
+    if (LoadingTemplate != null)
+    {
+        @LoadingTemplate
+    }
+    else
+    {
+        <div class="position-absolute w-100 h-100 d-flex flex-column align-items-center bg-white justify-content-center">
+            <div class="spinner-border" role="status">
+            </div>
+            <span class="sr-only">@LoadingText</span>
+        </div>
+    }
+}
+else
+{
+    @ChildContent
+}
+
+@code{
+    [Parameter]
+    public bool IsLoading { get; set; }
+
+    [Parameter]
+    public string LoadingText { get; set; } = "Загрузка...";
+
+    [Parameter]
+    public RenderFragment LoadingTemplate { get; set; }
+
+    [Parameter]
+    public RenderFragment ChildContent { get; set; }
+}
