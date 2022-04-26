@@ -42,11 +42,27 @@ namespace FileCloudClient.Services
                         return;
                     }
 
-                    var diff = _userProfileStorageService.TokenExpired - TimeSpan.FromSeconds(30);
+                    var seconds = 120;
 
-                    var delayDiff = diff - DateTime.UtcNow;
+                    var delayDiff = _userProfileStorageService.TokenExpired;
 
-                    await Task.Delay(delayDiff, stoppingToken);
+                    if (_userProfileStorageService.TokenExpired > seconds)
+                    {
+                        delayDiff = _userProfileStorageService.TokenExpired - seconds;
+
+                        if(delayDiff <= 20)
+                        {
+                            delayDiff = _userProfileStorageService.TokenExpired - (seconds / 3);
+                        }
+                    }
+                    else
+                    {
+                        delayDiff = _userProfileStorageService.TokenExpired - (_userProfileStorageService.TokenExpired / 2);
+                    }
+
+                    Debug.WriteLine($"Время жизни токена {_userProfileStorageService.TokenExpired} секунд. Запуск обновления токена произойдет через {delayDiff} секунд");
+
+                    await Task.Delay(TimeSpan.FromSeconds(delayDiff), stoppingToken);
 
                     Debug.WriteLine("Проверка обновления токена");
 
@@ -56,15 +72,12 @@ namespace FileCloudClient.Services
                     {
                         if (client.DefaultRequestHeaders.Authorization != null)
                         {
-                            var responseMessage = await client.GetAsync("api/Users/GetToken", stoppingToken);
+                            var responseMessage = await client.GetAsync("api/Users/UpdateToken", stoppingToken);
 
                             var successResponseMessage = responseMessage.EnsureSuccessStatusCode();
 
                             if (successResponseMessage.IsSuccessStatusCode)
                             {
-                                var responseModel = await responseMessage.Content.ReadFromJsonAsync<AuthenticateTokenResponseModel>();
-
-                                _userProfileStorageService.Token = responseModel.Token;
 
                                 if (responseMessage.Headers.TryGetValues("JwtTokenExpires", out var values))
                                 {
@@ -72,7 +85,17 @@ namespace FileCloudClient.Services
 
                                     if (expires != null)
                                     {
-                                        _userProfileStorageService.TokenExpired = DateTime.Parse(expires);
+                                        _userProfileStorageService.TokenExpired = int.Parse(expires);
+                                    }
+                                }
+
+                                if (responseMessage.Headers.TryGetValues("JwtToken", out var tokenValues))
+                                {
+                                    string token = tokenValues.FirstOrDefault();
+
+                                    if (token != null)
+                                    {
+                                        _userProfileStorageService.Token = token;
                                     }
                                 }
                             }

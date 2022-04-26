@@ -33,17 +33,25 @@ namespace FileCloudClient.Services
             var successResponseMessage = responseMessage.EnsureSuccessStatusCode();
 
             var responseModel = await successResponseMessage.Content.ReadFromJsonAsync<AuthenticateResponseModel>();
-            Debug.WriteLine($"{responseModel.Id} {responseModel.UserName} - {responseModel.JwtToken}");
+            Debug.WriteLine($"{responseModel.Id} {responseModel.UserName}");
 
-            _userProfileStorageService.Token = responseModel.JwtToken;
-
-            if (responseMessage.Headers.TryGetValues("JwtTokenExpires", out var values))
+            if (responseMessage.Headers.TryGetValues("JwtTokenExpires", out var expiresValues))
             {
-                string expires = values.FirstOrDefault();
+                string expires = expiresValues.FirstOrDefault();
 
                 if (expires != null)
                 {
-                    _userProfileStorageService.TokenExpired = DateTime.Parse(expires);
+                    _userProfileStorageService.TokenExpired = int.Parse(expires);
+                }
+            }
+
+            if (responseMessage.Headers.TryGetValues("JwtToken", out var tokenValues))
+            {
+                string token = tokenValues.FirstOrDefault();
+
+                if (token != null)
+                {
+                    _userProfileStorageService.Token = token;
                 }
             }
 

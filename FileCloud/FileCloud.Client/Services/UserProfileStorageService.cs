@@ -9,6 +9,6 @@ namespace FileCloudClient.Services
         public string LastName { get; set; }
         public string UserName { get; set; }
         public string Token { get; set; }
-        public DateTime TokenExpired { get; set; }
+        public int TokenExpired { get; set; }
     }
 }

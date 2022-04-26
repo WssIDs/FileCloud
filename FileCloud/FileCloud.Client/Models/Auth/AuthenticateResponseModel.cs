@@ -9,10 +9,5 @@
         public string LastName { get; set; }
 
         public string UserName { get; set; }
-
-        /// <summary>
-        /// 
-        /// </summary>
-        public string JwtToken { get; set; }
     }
 }

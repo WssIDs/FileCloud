@@ -12,6 +12,6 @@
 
         string Token { get; set; }
 
-        DateTime TokenExpired { get; set; }
+        int TokenExpired { get; set; }
     }
 }
