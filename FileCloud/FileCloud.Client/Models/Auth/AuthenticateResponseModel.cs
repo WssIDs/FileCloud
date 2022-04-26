@@ -1,8 +1,5 @@
-﻿namespace FileCloud.Server.Models.Auth
+﻿namespace FileCloudClient.Models.Auth
 {
-    /// <summary>
-    /// 
-    /// </summary>
     public class AuthenticateResponseModel
     {
         public Guid Id { get; set; }
@@ -11,6 +8,6 @@
 
         public string LastName { get; set; }
 
-        public string Username { get; set; }
+        public string UserName { get; set; }
     }
 }

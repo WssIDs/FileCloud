@@ -64,7 +64,7 @@ namespace FileCloud.Server.Controllers
         /// </summary>
         /// <returns></returns>
         [Authorize]
-        [HttpGet("GetToken")]
-        public AuthenticateTokenResponseModel GetToken() => _userService.GetToken();
+        [HttpGet("UpdateToken")]
+        public void UpdateToken() => _userService.UpdateToken();
     }
 }

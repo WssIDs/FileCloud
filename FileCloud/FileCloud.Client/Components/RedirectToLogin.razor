@@ -1,0 +1,22 @@
+﻿@inject ILoginService _loginService
+@inject NavigationManager _navigationManager
+
+@implements IDisposable
+
+@code {
+
+    protected override void OnInitialized()
+    {
+        _loginService.OnRedirected += Redirected;
+    }
+
+    private void Redirected(string url)
+    {
+        _navigationManager.NavigateTo(url);
+    }
+
+    public void Dispose()
+    {
+        _loginService.OnRedirected -= Redirected;
+    }
+}

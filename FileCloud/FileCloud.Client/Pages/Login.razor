@@ -1,0 +1,99 @@
+﻿@page "/"
+@layout LoginLayout
+
+@using FileCloudClient.Models.Auth
+@using Microsoft.Extensions.Logging
+@using Microsoft.AspNetCore.Components
+@using System.ComponentModel.DataAnnotations
+@using System.Text.Json
+@using System.Net.Http.Json
+@using System.Text
+@using System.Diagnostics
+@using System.Net.Http.Headers
+@using FileCloudClient.Abstractions
+
+@inject ITokenUpdateService _tokenUpdateService;
+@inject ILoginService _loginService
+@inject IUserProfileStorageService _userProfileStorageService
+@inject NavigationManager _navigationManager
+
+@*@implements IDisposable*@
+
+
+<Loader IsLoading="@_isLoading" LoadingText="Выполняется вход...">
+     <div class="back">
+      <div class="div-center">
+    <EditForm @ref="LoginForm" Model=@_authenticateRequestModel OnValidSubmit=@HandleValidSubmitAsync>
+        <ObjectGraphDataAnnotationsValidator />
+        <InitialValidator/>
+        <h1 class="h3 mb-3 fw-normal">Вход в систему</h1>
+
+        <div class="form-floating mb-3">
+            <InputTextOnInput @bind-Value="_authenticateRequestModel.UserName" class="form-control" id="floatingInput" placeholder="Логин"/>
+            <label for="floatingInput">Имя пользователя</label>
+            <ValidationMessage For="@(() => _authenticateRequestModel.UserName)"/>
+        </div>
+        <div class="form-floating mb-3">
+            <InputTextOnInput @bind-Value="_authenticateRequestModel.Password" type="password" class="form-control" id="floatingPassword" placeholder="Пароль"/>
+            <label for="floatingPassword">Пароль</label>
+            <ValidationMessage For="@(() => _authenticateRequestModel.Password)"/>
+        </div>
+        <div class="mb-3">
+            <label>
+                <InputCheckbox @bind-Value="_authenticateRequestModel.RememberMe"/> Запомнить меня
+            </label>
+        </div>
+
+        @if(_error != null)
+        {
+            <div class="col-md-12">
+                <p class="text-danger">@_error</p>
+            </div>
+        }
+
+        <button class="w-100 btn btn-lg btn-primary" type="submit">Вход</button>
+        <hr />
+        <div class="col-md-12 text-center">
+            <button type="button" class="btn btn-link">Регистрация</button>
+            <button type="button" class="btn btn-link">Сбросить пароль</button>
+        </div>
+    </EditForm>
+   </div>
+</div>
+</Loader>
+
+@code {
+
+    private bool _isLoading;
+    private string _error;
+    private EditForm LoginForm;
+    private AuthenticateRequestModel _authenticateRequestModel = new();
+
+    private async Task HandleValidSubmitAsync()
+    {
+        try
+        {
+            _isLoading = true;
+
+            var responseInfo = await _loginService.LoginAsync(_authenticateRequestModel);
+
+            _userProfileStorageService.Id = responseInfo.Id;
+            _userProfileStorageService.UserName = responseInfo.UserName;
+            _userProfileStorageService.FirstName = responseInfo.FirstName;
+            _userProfileStorageService.LastName = responseInfo.LastName;
+
+            _tokenUpdateService.RunAsync().Forget();
+
+
+            _navigationManager.NavigateTo("/Main");
+        }
+        catch (Exception ex)
+        {
+            await Task.Delay(300);
+
+            _isLoading = false;
+            _error = ex.Message;
+            Debug.WriteLine(ex.ToString());
+        }
+    }
+}
