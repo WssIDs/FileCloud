@@ -1,5 +1,6 @@
-﻿using FileCloudClient.Data;
-using Microsoft.AspNetCore.Components.WebView.Maui;
+﻿using FileCloudClient.Abstractions;
+using FileCloudClient.Services;
+using System.Net.Http.Headers;
 
 namespace FileCloudClient
 {
@@ -9,15 +10,32 @@ namespace FileCloudClient
         {
             var builder = MauiApp.CreateBuilder();
             builder
-                .RegisterBlazorMauiWebView()
                 .UseMauiApp<App>()
                 .ConfigureFonts(fonts =>
                 {
                     fonts.AddFont("OpenSans-Regular.ttf", "OpenSansRegular");
                 });
 
-            builder.Services.AddBlazorWebView();
-            builder.Services.AddSingleton<WeatherForecastService>();
+
+#if DEBUG
+            builder.Services.AddBlazorWebViewDeveloperTools();
+#endif
+
+            builder.Services.AddMauiBlazorWebView();
+
+            builder.Services.AddSingleton<IUserProfileStorageService, UserProfileStorageService>();
+
+            builder.Services.AddHttpClient("FileCloud", (provider, client) =>
+            {
+                var userProfileService = provider.GetRequiredService<IUserProfileStorageService>();
+
+                // TODO Вынести адрес в конфиг
+                client.BaseAddress = new Uri("https://localhost:5001");
+                client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", userProfileService.Token);
+            });
+
+            builder.Services.AddSingleton<ILoginService, LoginService>();
+            builder.Services.AddSingleton<ITokenUpdateService, TokenUpdateService>();
 
             return builder.Build();
         }
