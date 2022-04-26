@@ -28,6 +28,6 @@ namespace FileCloud.Server.Abstractions
         /// 
         /// </summary>
         /// <returns></returns>
-        AuthenticateTokenResponseModel GetToken();
+        void UpdateToken();
     }
 }

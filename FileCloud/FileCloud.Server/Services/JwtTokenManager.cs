@@ -30,39 +30,41 @@ namespace FileCloud.Server.Services
         /// <param name="claims"></param>
         /// <param name="expires"></param>
         /// <returns></returns>
-        public string GenerateJwtToken(IEnumerable<Claim> claims, DateTime expires)
+        public void GenerateJwtToken(IEnumerable<Claim> claims, int expires)
         {
             byte[] secretBytes = Encoding.UTF8.GetBytes(TokenConstants.SecretKey);
             var key = new SymmetricSecurityKey(secretBytes);
 
             var signingCredentials = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
 
+            var currenttime = DateTime.UtcNow;
+
             var token = new JwtSecurityToken(
                 TokenConstants.Issuer,
                 TokenConstants.Audience,
                 claims,
-                notBefore: DateTime.UtcNow,
-                expires: expires,
+                notBefore: currenttime,
+                expires: currenttime.AddSeconds(expires),
                 signingCredentials: signingCredentials);
 
             _httpContextAccessor.HttpContext.Response.Headers.Add("JwtTokenExpires", expires.ToString());
-
-            return new JwtSecurityTokenHandler().WriteToken(token);
+            _httpContextAccessor.HttpContext.Response.Headers.Add("JwtToken", new JwtSecurityTokenHandler().WriteToken(token));
         }
 
         /// <summary>
         /// 
         /// </summary>
         /// <returns></returns>
-        public string UpdateToken()
+        public void UpdateToken()
         {
             var token = _httpContextAccessor.HttpContext.Request.Headers[HeaderNames.Authorization].ToString().Replace("Bearer ", string.Empty);
 
             var jwtToken = new JwtSecurityTokenHandler().ReadJwtToken(token);
 
-            var expires = DateTime.UtcNow.AddMinutes(1);
+            // seconds
+            var expires = 60;
 
-            return GenerateJwtToken(jwtToken.Claims, expires);
+            GenerateJwtToken(jwtToken.Claims, expires);
         }
     }
 }

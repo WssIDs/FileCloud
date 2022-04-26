@@ -2,10 +2,8 @@
 using FileCloud.Server.Abstractions;
 using FileCloud.Server.Models.Auth;
 using Microsoft.AspNetCore.Identity;
-using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
-using System.Text;
 
 namespace FileCloud.Server.Services
 {
@@ -60,15 +58,14 @@ namespace FileCloud.Server.Services
                     }
                 }
 
-                var jwtToken = _jwtTokenManager.GenerateJwtToken(claims, DateTime.UtcNow.AddMinutes(1));
+                _jwtTokenManager.GenerateJwtToken(claims, 60);
 
                 return new AuthenticateResponseModel
                 {
                     Id = user.Id,
                     FirstName = user.FirstName,
                     LastName = user.LastName,
-                    Username = user.UserName,
-                    JwtToken = jwtToken
+                    Username = user.UserName
                 };
             }
             else
@@ -87,6 +84,6 @@ namespace FileCloud.Server.Services
             throw new NotImplementedException();
         }
 
-        public AuthenticateTokenResponseModel GetToken() => new() { Token = _jwtTokenManager.UpdateToken() };
+        public void UpdateToken() => _jwtTokenManager.UpdateToken();
     }
 }
