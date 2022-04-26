@@ -17,6 +17,16 @@ namespace FileCloudClient.WinUI
         public App()
         {
             this.InitializeComponent();
+
+            Microsoft.Maui.Handlers.WindowHandler.Mapper.AppendToMapping(nameof(IWindow), (handler, view) =>
+            {
+
+#if WINDOWS
+
+                var nativeWindow = handler.PlatformView;
+                nativeWindow.Title = "FileCloud";
+#endif
+            });
         }
 
         protected override MauiApp CreateMauiApp() => MauiProgram.CreateMauiApp();
