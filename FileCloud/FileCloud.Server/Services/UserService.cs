@@ -58,7 +58,7 @@ namespace FileCloud.Server.Services
                     }
                 }
 
-                _jwtTokenManager.GenerateJwtToken(claims, 60);
+                _jwtTokenManager.GenerateJwtToken(claims, TokenConstants.TokenLifeTime);
 
                 return new AuthenticateResponseModel
                 {

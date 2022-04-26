@@ -62,7 +62,7 @@ namespace FileCloud.Server.Services
             var jwtToken = new JwtSecurityTokenHandler().ReadJwtToken(token);
 
             // seconds
-            var expires = 60;
+            var expires = TokenConstants.TokenLifeTime;
 
             GenerateJwtToken(jwtToken.Claims, expires);
         }
