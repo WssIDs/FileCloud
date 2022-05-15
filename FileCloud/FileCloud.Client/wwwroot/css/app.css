@@ -101,3 +101,15 @@ div.content {
 	display: table-cell;
 	vertical-align: middle;
 }
+
+.table tbody > tr.selected {
+	border-color: #afcbff;
+	background-color: #c5d9ff;
+}
+
+.table tbody > tr.selected td, .table tbody > tr.selected th {
+	border-top: 1px solid #afcbff;
+	border-bottom: 1px solid #afcbff;
+	color: #2b2b2b;
+	font-weight: 500;
+}
