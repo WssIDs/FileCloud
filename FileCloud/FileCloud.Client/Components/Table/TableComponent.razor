@@ -1,0 +1,135 @@
+﻿@typeparam TItem where TItem : IRow
+
+@{
+    var hover = IsHoverable ? "table-hover" : null;
+}
+
+ <div class="table-responsive">
+    <table class="table table-bordered @hover">
+        <caption>@TableCaption</caption>
+        <thead>
+            <tr class="table-light">
+                @TableHeader
+            </tr>
+        </thead>
+        @if (FilterRow != null)
+        {
+            <thead>
+                <tr>
+                 @FilterRow
+                </tr>
+            </thead>
+        }
+        <tbody>
+            @{
+                var countProps = (typeof(TItem)).GetProperties().ToList().Count();
+
+                if(Items == null)
+                {
+                    <tr>
+                        <td colspan="@countProps">
+                            <p class="text-center m-0">@EmptyMessage</p>
+                        </td>
+                    </tr>
+                }
+                else if(Items.Count == 0)
+                {
+                    <tr>
+                        <td colspan="@countProps">
+                            <p class="text-center m-0">@EmptyMessage</p>
+                        </td>
+                    </tr>
+                }
+                else
+                {
+                    foreach (var item in Items)
+                    {
+                        if (RowTemplate is not null)
+                        {
+                            var selected = item.IsSelected ? "selected" : null;
+
+                            <tr class="@selected" @onclick="(() => RowClick(item))" >
+                                @RowTemplate(item)
+                            </tr>
+                        }
+                    }
+                }
+            }
+        </tbody>
+        <tfoot>
+            <tr>
+                @TableFooter
+            </tr>
+        </tfoot>
+    </table>
+</div>
+
+@code {
+
+    [Parameter]
+    public bool IsHoverable { get; set; } = false;
+
+    [Parameter]
+    public bool IsSelectable { get; set; } = false;
+
+    [Parameter]
+    public RenderFragment TableHeader { get; set; }
+
+    [Parameter]
+    public RenderFragment FilterRow { get; set; }
+
+    [Parameter]
+    public RenderFragment<TItem> RowTemplate { get; set; }
+
+    [Parameter]
+    public RenderFragment TableFooter { get; set; }
+
+    /// <summary>
+    /// Подпись таблицы
+    /// </summary>
+    [Parameter]
+    public RenderFragment TableCaption { get; set; }
+
+    [Parameter]
+    public IReadOnlyList<TItem> Items { get; set; }
+
+    #region Events
+
+    [Parameter]
+    public EventCallback<bool> OnRowClick { get; set; }
+
+    private bool _isCtrlPressed;
+
+    #endregion
+
+    /// <summary>
+    /// 
+    /// </summary>
+    [Parameter]
+    public string EmptyMessage { get; set; } = "Записи не найдены";
+
+    protected override void OnInitialized()
+    {
+        base.OnInitialized();
+    }
+
+    private async Task RowClick(TItem item)
+    {
+        if (IsSelectable)
+        {
+            foreach (var rowItem in Items)
+            {
+                rowItem.IsSelected = false;
+            }
+
+            item.IsSelected = !item.IsSelected;
+
+            // Checking if EventCallback is set
+            if (OnRowClick.HasDelegate)
+            {
+                // Calling EventCallback
+                await OnRowClick.InvokeAsync(item.IsSelected);
+            }
+        }
+    }
+}
