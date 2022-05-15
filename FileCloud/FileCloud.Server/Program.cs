@@ -26,7 +26,12 @@ builder.Services.AddDbContext<FileCloudDbContext>(config =>
         config.Password.RequireLowercase = false;
         config.Password.RequireNonAlphanumeric = false;
         config.Password.RequireUppercase = false;
-        config.Password.RequiredLength = 1;
+        config.Password.RequiredLength = 3;
+
+
+        config.Lockout.DefaultLockoutTimeSpan = TimeSpan.FromMinutes(30);
+        config.Lockout.MaxFailedAccessAttempts = 5;
+        config.Lockout.AllowedForNewUsers = true;
     })
     .AddEntityFrameworkStores<FileCloudDbContext>();
 
