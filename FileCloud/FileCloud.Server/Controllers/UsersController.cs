@@ -1,5 +1,5 @@
 ﻿using FileCloud.Server.Abstractions;
-using FileCloud.Server.Models.Auth;
+using FileCloud.Shared.Models;
 using FileCloud.Shared.Models.Auth;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -30,7 +30,7 @@ namespace FileCloud.Server.Controllers
         /// <returns></returns>
         [Authorize(Roles = "Administrator")]
         [HttpGet]
-        public async Task<IEnumerable<object>> GetAsync() => await _userService.GetAllAsync();
+        public async Task<IEnumerable<UserModel>> GetAsync() => await _userService.GetAllAsync();
 
         /// <summary>
         /// 
@@ -40,7 +40,7 @@ namespace FileCloud.Server.Controllers
         [Authorize(Roles = "Administrator")]
         [HttpGet]
         [Route("{id}")]
-        public async Task<object> GetAsync(Guid id) => await _userService.GetByIdAsync(id);
+        public async Task<UserModel> GetAsync(Guid id) => await _userService.GetByIdAsync(id);
 
         /// <summary>
         /// 
