@@ -1,4 +1,5 @@
-﻿using FileCloud.Server.Models.Auth;
+﻿using FileCloud.Shared.Models;
+using FileCloud.Shared.Models.Auth;
 
 namespace FileCloud.Server.Abstractions
 {
@@ -15,14 +16,14 @@ namespace FileCloud.Server.Abstractions
         /// 
         /// </summary>
         /// <returns></returns>
-        Task<IEnumerable<object>> GetAllAsync();
+        Task<IEnumerable<UserModel>> GetAllAsync();
 
         /// <summary>
         /// 
         /// </summary>
         /// <param name="id"></param>
         /// <returns></returns>
-        Task<object> GetByIdAsync(Guid id);
+        Task<UserModel> GetByIdAsync(Guid id);
 
         /// <summary>
         /// 

@@ -1,7 +1,10 @@
 ﻿using FileCloud.Data.Entities;
 using FileCloud.Server.Abstractions;
 using FileCloud.Server.Models.Auth;
+using FileCloud.Shared.Models;
+using FileCloud.Shared.Models.Auth;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 
@@ -12,6 +15,7 @@ namespace FileCloud.Server.Services
     /// </summary>
     public class UserService : IUserService
     {
+        private readonly SignInManager<User> _signInManager;
         private readonly IJwtTokenManager _jwtTokenManager;
         private readonly UserManager<User> _userManager;
         private readonly RoleManager<Role> _roleManager;
@@ -19,18 +23,30 @@ namespace FileCloud.Server.Services
         public UserService(
             UserManager<User> userManager,
             RoleManager<Role> roleManager,
-            IJwtTokenManager jwtTokenManager)
+            IJwtTokenManager jwtTokenManager,
+            SignInManager<User> signInManager)
         {
             _userManager = userManager;
             _roleManager = roleManager;
             _jwtTokenManager = jwtTokenManager;
+            _signInManager = signInManager;
         }
 
         public async Task<AuthenticateResponseModel> AuthAsync(AuthenticateRequestModel authenticateRequest)
         {
             var user = await _userManager.FindByNameAsync(authenticateRequest.UserName);
 
-            if(user == null) throw new NullReferenceException(nameof(user));
+            if (user == null) throw new NullReferenceException(nameof(user));
+
+            var signResult = await _signInManager.CheckPasswordSignInAsync(user, authenticateRequest.Password, true);
+
+            if (!signResult.Succeeded)
+            {
+                if (signResult.IsLockedOut)
+                {
+                    throw new Exception($"Пользователь заблокирован");
+                }
+            }
 
             var result = await _userManager.CheckPasswordAsync(user, authenticateRequest.Password);
 
@@ -65,7 +81,7 @@ namespace FileCloud.Server.Services
                     Id = user.Id,
                     FirstName = user.FirstName,
                     LastName = user.LastName,
-                    Username = user.UserName
+                    UserName = user.UserName
                 };
             }
             else
@@ -74,14 +90,40 @@ namespace FileCloud.Server.Services
             }
         }
 
-        public Task<IEnumerable<object>> GetAllAsync()
+        public async Task<IEnumerable<UserModel>> GetAllAsync()
         {
-            throw new NotImplementedException();
+            return await _userManager.Users.Select(user => new UserModel
+            {
+                UserName = user.UserName,
+                Email = user.Email,
+                AccessFailedCount = user.AccessFailedCount,
+                FirstName = user.FirstName,
+                Id = user.Id,
+                LastName = user.LastName,
+                LockoutEnabled = user.LockoutEnabled,
+                PhoneNumber = user.PhoneNumber,
+                TwoFactorEnabled = user.TwoFactorEnabled,
+                IsLocked = user.LockoutEnd != null && user.LockoutEnd >= DateTime.UtcNow
+            }).ToListAsync();
         }
 
-        public Task<object> GetByIdAsync(Guid id)
+        public async Task<UserModel> GetByIdAsync(Guid id)
         {
-            throw new NotImplementedException();
+            var user = await _userManager.FindByIdAsync(id.ToString());
+
+            return new UserModel
+            {
+                UserName = user.UserName,
+                Email = user.Email,
+                AccessFailedCount = user.AccessFailedCount,
+                FirstName = user.FirstName,
+                Id = user.Id,
+                LastName = user.LastName,
+                LockoutEnabled = user.LockoutEnabled,
+                PhoneNumber = user.PhoneNumber,
+                TwoFactorEnabled = user.TwoFactorEnabled,
+                IsLocked = user.LockoutEnd != null && user.LockoutEnd >= DateTime.UtcNow
+            };
         }
 
         public void UpdateToken() => _jwtTokenManager.UpdateToken();
