@@ -13,6 +13,10 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Client", "Client", "{0BA085
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FileCloud.Data", "FileCloud\FileCloud.Data\FileCloud.Data.csproj", "{721B8CB9-A54F-413A-BB25-33CFD00D71A1}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Shared", "Shared", "{33076485-CC0F-4038-A359-AACF96B24558}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FileCloud.Shared.Models", "FileCloud\FileCloud.Shared.Models\FileCloud.Shared.Models.csproj", "{000EFD8D-9EC9-4455-99F0-9F2413733157}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -33,6 +37,10 @@ Global
 		{721B8CB9-A54F-413A-BB25-33CFD00D71A1}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{721B8CB9-A54F-413A-BB25-33CFD00D71A1}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{721B8CB9-A54F-413A-BB25-33CFD00D71A1}.Release|Any CPU.Build.0 = Release|Any CPU
+		{000EFD8D-9EC9-4455-99F0-9F2413733157}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{000EFD8D-9EC9-4455-99F0-9F2413733157}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{000EFD8D-9EC9-4455-99F0-9F2413733157}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{000EFD8D-9EC9-4455-99F0-9F2413733157}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -41,6 +49,7 @@ Global
 		{51D5DE8F-1569-467D-A89F-1A080930E1BD} = {0BA08597-CB29-4FEC-81A2-2DED4E430A4D}
 		{A60E3CC8-D395-434A-86D8-72AAE0A8BEFE} = {A55BBE71-2B4C-4B6F-8375-B99DAC90AAA4}
 		{721B8CB9-A54F-413A-BB25-33CFD00D71A1} = {A55BBE71-2B4C-4B6F-8375-B99DAC90AAA4}
+		{000EFD8D-9EC9-4455-99F0-9F2413733157} = {33076485-CC0F-4038-A359-AACF96B24558}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {AA116882-9470-4C69-877F-84D8A859EFF1}
