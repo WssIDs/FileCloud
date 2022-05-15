@@ -1,4 +1,6 @@
-﻿@if (IsLoading)
+﻿@ChildContent
+
+@if (IsLoading)
 {
     if (LoadingTemplate != null)
     {
@@ -13,10 +15,7 @@
         </div>
     }
 }
-else
-{
-    @ChildContent
-}
+
 
 @code{
     [Parameter]
