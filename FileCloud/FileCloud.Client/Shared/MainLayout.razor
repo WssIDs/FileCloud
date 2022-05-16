@@ -6,23 +6,35 @@
 @inject ILoginService _loginService
 @inject ITokenUpdateService _tokenUpdateService
 
-<nav class="navbar navbar-expand-lg navbar-dark bg-dark">
-  <div class="container-fluid">
-    <NavLink class="navbar-brand" href="Main">FileCloud Client</NavLink>
-    <div class="d-flex">
-        <button class="btn btn-outline-success" @onclick="@LogOut">Выход</button>
-    </div>
-  </div>
-</nav>
+<div class="d-flex flex-column min-vh-100">
+    <header class="container-fluid p-0" style="background: gray; color: wheat;">
+        <nav class="navbar navbar-dark bg-dark">
+            <div class="container-fluid">
+              <a class="navbar-brand">FileCloud</a>
+              <form class="d-flex">
+                <button class="btn btn-outline-success" type="button" @onclick="LogOut">Выход</button>
+              </form>
+            </div>
+          </nav>
+    </header>
 
-<div class="container-fluid">
-<div class="row">
-    <NavMenu/>
-
-    <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4"><div class="chartjs-size-monitor"><div class="chartjs-size-monitor-expand"><div class=""></div></div><div class="chartjs-size-monitor-shrink"><div class=""></div></div></div>
-        @Body
+    <main class="container-fluid flex-fill">
+        <div class="row">
+            <div class="col-md-12 col-lg-2 p-3">
+                <!-- Sidebar -->
+                <NavMenu/>
+            </div>
+            <div class="col-md-12 col-lg-10 p-3">
+                <article>
+                    @Body
+                </article>
+            </div>
+        </div>
     </main>
-  </div>
+
+    <footer class="container-fluid footer navbar-fixed-bottom p-2" style="background: cornflowerblue;">
+        footer
+    </footer>
 </div>
 
 
