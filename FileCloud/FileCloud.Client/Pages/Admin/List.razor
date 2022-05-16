@@ -1,0 +1,134 @@
+﻿@page "/Admin/List"
+@using FileCloud.Shared.Models
+@using FileCloudClient.Models
+@layout MainLayout
+
+@inject IAdminService _adminService
+@inject NavigationManager _navigationManager
+
+<h4>Администирование</h4>
+
+<Loader IsLoading=@_isBusy>
+    <LoadingTemplate>
+        <div class="d-flex justify-content-center">
+          <div class="spinner-border" role="status">
+            <span class="visually-hidden">Загрузка...</span>
+          </div>
+        </div>
+    </LoadingTemplate>
+    <ChildContent>
+    <TableComponent Items="@_users" TItem="UserInfoModel" Context="user" IsHoverable=true>
+        <TableCaption>
+            @{
+                string message = "Список пользователей";
+
+                if(_users != null && _users.Count > 0)
+                {
+                    var count = _users.Count(u => u.IsSelected);
+
+                    if (count > 0)
+                    {
+                        message = $"Выбрано {count} из {_users.Count} пользователей";
+                    }
+                }
+
+                    @message
+            }
+        </TableCaption>
+        <TableHeader>
+            <th scope="col" data-bs-toggle="tooltip" data-bs-placement="top" title="Заблокирован ли пользователь">
+                <div class="text-center" >
+                    <span class="oi oi-lock-locked"/>
+                </div>
+            </th>
+            <th scope="col">Логин</th>
+            <th scope="col">Email</th>
+            <th scope="col">Имя</th>
+            <th scope="col">Фамилия</th>
+            <th scope="col"></th>
+        </TableHeader>
+        <FilterRow>
+            <th scope="col" data-bs-toggle="tooltip" data-bs-placement="top" title="Заблокирован ли пользователь">
+            </th>
+            <th scope="col"><input class="form-control" type="search" placeholder="Поиск..."/></th>
+            <th scope="col"><input class="form-control" type="search" placeholder="Поиск..."/></th>
+            <th scope="col"><input class="form-control" type="search" placeholder="Поиск..."/></th>
+            <th scope="col"><input class="form-control" type="search" placeholder="Поиск..."/></th>
+            <th scope="col"></th>
+        </FilterRow>
+        <RowTemplate>
+            @{
+                var displayLock = user.IsLocked ? "display:none" : "";                   
+            }
+
+            <td class="align-middle">@if(!user.IsLocked)
+            {
+                <div class="text-center">
+                    <button class="btn btn-sm btn-success">
+                        <span class="oi oi-lock-unlocked"></span>
+                    </button>
+                </div>
+            }
+
+            </td>
+            <td class="align-middle">@user.Email</td>
+            <td class="align-middle">@user.UserName</td>
+            <td class="align-middle">@user.FirstName</td>
+            <td class="align-middle">@user.LastName</td>
+            <td class="align-middle">
+                <div>
+                    <button class="btn btn-sm btn-secondary">
+                        <span class="oi oi-pencil"></span>
+                    </button>
+                    <button class="btn btn-sm btn-secondary" @onclick="@((e) => UserDetails(@user.Id))">
+                        <span class="oi oi-eye"></span>
+                    </button>
+
+                    
+                    <button class="btn btn-sm btn-secondary">
+                        <span class="oi oi-eye"></span>
+                    </button>
+                </div>
+            </td>
+        </RowTemplate>
+        <TableFooter>
+            <th scope="col"></th>
+            <th scope="col"></th>
+            <th scope="col"></th>
+            <th scope="col"></th>
+            <th scope="col"></th>
+            <th scope="col"></th>
+        </TableFooter>
+    </TableComponent>
+    </ChildContent>
+</Loader>
+
+
+@code {
+
+    private List<UserInfoModel> _users;
+
+    private bool _isBusy;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await base.OnInitializedAsync();
+
+        _isBusy = true;
+
+        _users = await _adminService.GetAllUsersAsync();
+
+        for (int i = 0; i < 5; i++)
+        {
+            _users.Add(new UserInfoModel());
+        }
+
+        _isBusy = false;
+
+    }
+
+    private void UserDetails(Guid userId)
+    {
+        _navigationManager.NavigateTo($"/Admin/Details/{userId}");
+    }
+}
