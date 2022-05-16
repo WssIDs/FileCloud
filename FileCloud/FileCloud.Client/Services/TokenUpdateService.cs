@@ -1,7 +1,5 @@
 ﻿using FileCloudClient.Abstractions;
-using FileCloudClient.Models.Auth;
 using System.Diagnostics;
-using System.Net.Http.Json;
 
 namespace FileCloudClient.Services
 {

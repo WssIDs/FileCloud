@@ -1,4 +1,4 @@
-﻿using FileCloudClient.Models.Auth;
+﻿using FileCloud.Shared.Models.Auth;
 
 namespace FileCloudClient.Abstractions
 {

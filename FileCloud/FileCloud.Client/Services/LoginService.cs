@@ -1,5 +1,5 @@
-﻿using FileCloudClient.Abstractions;
-using FileCloudClient.Models.Auth;
+﻿using FileCloud.Shared.Models.Auth;
+using FileCloudClient.Abstractions;
 using System.Diagnostics;
 using System.Net.Http.Json;
 using System.Text;

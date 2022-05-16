@@ -52,7 +52,8 @@
 
 	<ItemGroup>
 	  <PackageReference Include="Microsoft.AspNetCore.Components.DataAnnotations.Validation" Version="3.2.0-rc1.20223.4" />
-	  <PackageReference Include="Microsoft.Extensions.Http" Version="7.0.0-preview.3.22175.4" />
+	  <PackageReference Include="Microsoft.Extensions.Http" Version="7.0.0-preview.4.22229.4" />
+	  <ProjectReference Include="..\FileCloud.Shared.Models\FileCloud.Shared.Models.csproj" />
 	</ItemGroup>
 
 </Project>
