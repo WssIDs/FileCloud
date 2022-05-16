@@ -36,6 +36,7 @@ namespace FileCloudClient
 
             builder.Services.AddSingleton<ILoginService, LoginService>();
             builder.Services.AddSingleton<ITokenUpdateService, TokenUpdateService>();
+            builder.Services.AddTransient<IAdminService, AdminService>();
 
             return builder.Build();
         }
