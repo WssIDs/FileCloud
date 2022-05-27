@@ -1,11 +1,18 @@
-﻿<section class="shadow">
+﻿
+@inject IUserProfileStorageService _userProfileService
+
+<section class="shadow">
     <div class="list-group">
-        <NavLink href="/Admin/List" class="list-group-item list-group-item-action" aria-current="true">
-            <div class="d-flex w-100 justify-content-between">
+
+        @if (_userProfileService.User.Roles.Any(role => role == "Administrator"))
+        {
+            <NavLink href="/Admin" class="list-group-item list-group-item-action" aria-current="true" Match="NavLinkMatch.Prefix">
+                <div class="d-flex w-100 justify-content-between">
             <h6 class="mb-1">Администрирование</h6>
             </div>
-        </NavLink>
-        <NavLink href="Main" class="list-group-item list-group-item-action">
+            </NavLink>
+        }
+        <NavLink href="Main" class="list-group-item list-group-item-action" Match="NavLinkMatch.Prefix">
             <div class="d-flex w-100 justify-content-between">
             <h6 class="mb-1">Все файлы</h6>
             </div>
