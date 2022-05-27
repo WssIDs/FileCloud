@@ -1,5 +1,8 @@
 ﻿namespace FileCloud.Shared.Models
 {
+    /// <summary>
+    /// 
+    /// </summary>
     public class UserModel
     {
         public Guid Id { get; set; }
@@ -21,5 +24,7 @@
         public bool TwoFactorEnabled { get; set; }
 
         public bool IsLocked { get; set; }
+
+        public IList<string> Roles { get; set; }
     }
 }
