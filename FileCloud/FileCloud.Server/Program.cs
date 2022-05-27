@@ -113,7 +113,7 @@ using (var serviceScope = app.Services.CreateScope())
             LastName = "Default Last"
         };
 
-        var result = await userManager.CreateAsync(user, "1");
+        var result = await userManager.CreateAsync(user, "111");
 
         if (result.Succeeded)
         {
@@ -141,6 +141,14 @@ using (var serviceScope = app.Services.CreateScope())
             }
         }
     }
+
+    var userole = new Role
+    {
+        Name = "User",
+        NormalizedName = "USER",
+    };
+
+    await roleManager.CreateAsync(userole);
 }
 
 // Configure the HTTP request pipeline.

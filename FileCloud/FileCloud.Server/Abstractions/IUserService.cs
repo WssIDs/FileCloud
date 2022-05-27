@@ -10,7 +10,7 @@ namespace FileCloud.Server.Abstractions
         /// </summary>
         /// <param name="authenticateRequest"></param>
         /// <returns></returns>
-        Task<AuthenticateResponseModel> AuthAsync(AuthenticateRequestModel authenticateRequest);
+        Task<UserModel> AuthAsync(AuthenticateRequestModel authenticateRequest);
 
         /// <summary>
         /// 
@@ -30,5 +30,19 @@ namespace FileCloud.Server.Abstractions
         /// </summary>
         /// <returns></returns>
         void UpdateToken();
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="login"></param>
+        /// <returns></returns>
+        Task<bool> CheckLoginAsync(string login);
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="user"></param>
+        /// <returns></returns>
+        Task<bool> RegisterAsync(CreateUserModel user);
     }
 }

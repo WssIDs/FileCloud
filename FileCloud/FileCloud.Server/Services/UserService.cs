@@ -32,11 +32,11 @@ namespace FileCloud.Server.Services
             _signInManager = signInManager;
         }
 
-        public async Task<AuthenticateResponseModel> AuthAsync(AuthenticateRequestModel authenticateRequest)
+        public async Task<UserModel> AuthAsync(AuthenticateRequestModel authenticateRequest)
         {
             var user = await _userManager.FindByNameAsync(authenticateRequest.UserName);
 
-            if (user == null) throw new NullReferenceException(nameof(user));
+            if (user == null) throw new NullReferenceException($"Пользователь '{nameof(user)}' не зарегистирован в системе");
 
             var signResult = await _signInManager.CheckPasswordSignInAsync(user, authenticateRequest.Password, true);
 
@@ -76,18 +76,40 @@ namespace FileCloud.Server.Services
 
                 _jwtTokenManager.GenerateJwtToken(claims, TokenConstants.TokenLifeTime);
 
-                return new AuthenticateResponseModel
+                return new UserModel
                 {
-                    Id = user.Id,
+                    UserName = user.UserName,
+                    Email = user.Email,
+                    AccessFailedCount = user.AccessFailedCount,
                     FirstName = user.FirstName,
+                    Id = user.Id,
                     LastName = user.LastName,
-                    UserName = user.UserName
+                    LockoutEnabled = user.LockoutEnabled,
+                    PhoneNumber = user.PhoneNumber,
+                    TwoFactorEnabled = user.TwoFactorEnabled,
+                    IsLocked = user.LockoutEnd != null && user.LockoutEnd >= DateTime.UtcNow,
+                    Roles = await _userManager.GetRolesAsync(user)
                 };
             }
             else
             {
                 throw new Exception("Имя пользователя или пароль неверный");
             }
+        }
+
+        public async Task<bool> CheckLoginAsync(string login)
+        {
+            var user = await _userManager.FindByNameAsync(login);
+
+            if (user != null)
+            {
+                if (login.ToLower().Equals(user.UserName.ToLower(), StringComparison.InvariantCultureIgnoreCase))
+                {
+                    return false;
+                }
+            }
+
+            return true;
         }
 
         public async Task<IEnumerable<UserModel>> GetAllAsync()
@@ -122,8 +144,52 @@ namespace FileCloud.Server.Services
                 LockoutEnabled = user.LockoutEnabled,
                 PhoneNumber = user.PhoneNumber,
                 TwoFactorEnabled = user.TwoFactorEnabled,
-                IsLocked = user.LockoutEnd != null && user.LockoutEnd >= DateTime.UtcNow
+                IsLocked = user.LockoutEnd != null && user.LockoutEnd >= DateTime.UtcNow,
+                Roles = await _userManager.GetRolesAsync(user)
             };
+        }
+
+        public async Task<bool> RegisterAsync(CreateUserModel user)
+        {
+            var oldUser = await _userManager.FindByNameAsync(user.UserName);
+
+            if (oldUser != null) throw new Exception($"Пользователь с логином '{user.UserName}' существует");
+
+            var newUser = new User
+            {
+                UserName = user.UserName,
+                FirstName = user.FirstName,
+                Email = user.Email,
+                LastName = user.LastName,
+                PhoneNumber = user.PhoneNumber
+            };
+
+            var result = await _userManager.CreateAsync(newUser, user.Password);
+
+            if (result.Succeeded)
+            {
+                await _userManager.AddClaimAsync(newUser, new Claim(ClaimTypes.Role, "User"));
+
+                var role = await _roleManager.Roles.FirstOrDefaultAsync(role => role.Name == "User");
+
+                if (role != null)
+                {
+                    if (!await _userManager.IsInRoleAsync(newUser, role.Name))
+                    {
+                        await _userManager.AddToRoleAsync(newUser, role.Name);
+                    }
+                }
+                else
+                {
+                    throw new Exception($"Роль '{role.Name}' не найдена в системе");
+                }
+            }
+            else
+            {
+                throw new Exception(string.Join("\n", result.Errors.Select(error => $"{error.Code} {error.Description}")));
+            }
+
+            return true;
         }
 
         public void UpdateToken() => _jwtTokenManager.UpdateToken();

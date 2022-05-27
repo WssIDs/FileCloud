@@ -48,7 +48,7 @@ namespace FileCloud.Server.Controllers
         /// <param name="authenticateRequest"></param>
         /// <returns></returns>
         [HttpPost("Authenticate")]
-        public async Task<ActionResult<AuthenticateResponseModel>> AuthenticateAsync([FromBody] AuthenticateRequestModel authenticateRequest)
+        public async Task<ActionResult<UserModel>> AuthenticateAsync([FromBody] AuthenticateRequestModel authenticateRequest)
         {
             try
             {
@@ -63,9 +63,35 @@ namespace FileCloud.Server.Controllers
         /// <summary>
         /// 
         /// </summary>
+        /// <param name="login"></param>
+        /// <returns></returns>
+        [HttpGet("CheckLogin/{login}")]
+        public async Task<ActionResult<bool>> CheckLoginAsync(string login) => await _userService.CheckLoginAsync(login);
+
+        /// <summary>
+        /// 
+        /// </summary>
         /// <returns></returns>
         [Authorize]
         [HttpGet("UpdateToken")]
         public void UpdateToken() => _userService.UpdateToken();
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="user"></param>
+        /// <returns></returns>
+        [HttpPost("Register")]
+        public async Task<ActionResult<bool>> RegisterAsync(CreateUserModel user)
+        {
+            try
+            {
+                return await _userService.RegisterAsync(user);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
     }
 }
