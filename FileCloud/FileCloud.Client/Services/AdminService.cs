@@ -25,5 +25,11 @@ namespace FileCloudClient.Services
             var response = await _httpClient.GetAsync("api/users");
             return await response.Content.ReadFromJsonAsync<List<UserInfoModel>>();
         }
+
+        public async Task<UserInfoModel> GetUserAsync(Guid id)
+        {
+            var response = await _httpClient.GetAsync($"api/users/{id}");
+            return await response.Content.ReadFromJsonAsync<UserInfoModel>();
+        }
     }
 }

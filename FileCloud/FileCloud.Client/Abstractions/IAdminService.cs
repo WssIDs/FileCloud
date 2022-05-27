@@ -12,5 +12,12 @@ namespace FileCloudClient.Abstractions
         /// </summary>
         /// <returns></returns>
         public Task<List<UserInfoModel>> GetAllUsersAsync();
+
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <returns></returns>
+        public Task<UserInfoModel> GetUserAsync(Guid id);
     }
 }

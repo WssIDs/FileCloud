@@ -1,4 +1,4 @@
-﻿@page "/Admin/List"
+﻿@page "/Admin"
 @using FileCloud.Shared.Models
 @using FileCloudClient.Models
 @layout MainLayout
@@ -7,6 +7,7 @@
 @inject NavigationManager _navigationManager
 
 <h4>Администирование</h4>
+<hr />
 
 <Loader IsLoading=@_isBusy>
     <LoadingTemplate>
@@ -32,7 +33,7 @@
                     }
                 }
 
-                    @message
+                        @message
             }
         </TableCaption>
         <TableHeader>
@@ -61,7 +62,7 @@
                 var displayLock = user.IsLocked ? "display:none" : "";                   
             }
 
-            <td class="align-middle">@if(!user.IsLocked)
+            <td class="align-middle">@if(user.IsLocked)
             {
                 <div class="text-center">
                     <button class="btn btn-sm btn-success">
@@ -77,15 +78,10 @@
             <td class="align-middle">@user.LastName</td>
             <td class="align-middle">
                 <div>
-                    <button class="btn btn-sm btn-secondary">
+                    @*<button class="btn btn-sm btn-secondary">
                         <span class="oi oi-pencil"></span>
-                    </button>
-                    <button class="btn btn-sm btn-secondary" @onclick="@((e) => UserDetails(@user.Id))">
-                        <span class="oi oi-eye"></span>
-                    </button>
-
-                    
-                    <button class="btn btn-sm btn-secondary">
+                    </button>*@
+                    <button class="btn btn-sm btn-secondary" @onclick="@(() => UserDetails(user.Id))">
                         <span class="oi oi-eye"></span>
                     </button>
                 </div>
@@ -117,11 +113,6 @@
         _isBusy = true;
 
         _users = await _adminService.GetAllUsersAsync();
-
-        for (int i = 0; i < 5; i++)
-        {
-            _users.Add(new UserInfoModel());
-        }
 
         _isBusy = false;
 

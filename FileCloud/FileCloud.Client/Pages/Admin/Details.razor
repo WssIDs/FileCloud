@@ -1,0 +1,79 @@
+﻿@page "/Admin/Details/{userId:guid}"
+@using FileCloudClient.Models
+
+@inject IAdminService _adminService
+
+
+<div class="row">
+    <div class="col-1 w-auto">
+    <a class="btn btn-sm btn-outline-primary" href="/Admin"><span class="oi oi-action-undo"></span></a>
+    </div>
+    <div class="col">
+    <h3>Информация о пользователе</h3>
+    </div>
+</div>
+<hr/>
+
+<Loader IsLoading=@_isBusy>
+    <LoadingTemplate>
+        <div class="d-flex justify-content-center">
+          <div class="spinner-border" role="status">
+            <span class="visually-hidden">Загрузка...</span>
+          </div>
+        </div>
+    </LoadingTemplate>
+    <ChildContent>
+
+        @if (_user != null)
+        {
+
+            <div class="tex row">
+                <div class="col-3">
+                    <p class="fw-bold">Логин</p>
+                    <p class="fw-bold">ФИО</p>
+                    <p class="fw-bold">Email</p>
+                    <p class="fw-bold">Телефон</p>
+                </div>  
+                <div class="col">
+                    <p>@_user.UserName</p>
+                    <p>@_user.FirstName @_user.LastName</p>
+                    <p>@_user.Email</p>
+                    <p>@_user.PhoneNumber</p>
+                </div>
+            </div>
+
+            <hr/>
+            <h5 class="mt-3">Роли</h5>
+            <div class="tex row">
+                <div class="col">
+                    <h6>
+                        @foreach (var role in _user.Roles)
+                        {
+                            <span class="badge rounded-pill bg-primary m-1">@role</span>
+                        }
+                    </h6>
+                </div>
+            </div>
+        }
+    </ChildContent>
+</Loader>
+
+@code {
+
+    private bool _isBusy;
+
+    [Parameter]
+    public Guid userId { get; set; }
+
+    private UserInfoModel _user;
+
+    protected override async Task OnParametersSetAsync()
+    {
+        _isBusy = true;
+
+        _user = await _adminService.GetUserAsync(userId);
+        await  base.OnParametersSetAsync();
+
+        _isBusy = false;
+    }
+}
