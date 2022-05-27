@@ -48,9 +48,7 @@
                         {
                             var selected = item.IsSelected ? "selected" : null;
 
-                            <tr class="@selected" @onclick="(() => RowClick(item))" >
-                                @RowTemplate(item)
-                            </tr>
+                            <tr class="@selected" @onclick="(() => RowClick(item))">@RowTemplate(item)</tr>
                         }
                     }
                 }
@@ -107,11 +105,6 @@
     /// </summary>
     [Parameter]
     public string EmptyMessage { get; set; } = "Записи не найдены";
-
-    protected override void OnInitialized()
-    {
-        base.OnInitialized();
-    }
 
     private async Task RowClick(TItem item)
     {
