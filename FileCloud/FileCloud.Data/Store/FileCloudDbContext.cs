@@ -17,5 +17,9 @@ namespace FileCloud.Data.Store
             : base(options)
         {
         }
+
+        public DbSet<PathData> Paths { get; set; }
+
+        public DbSet<FileInfoData> Files { get; set; }
     }
 }
