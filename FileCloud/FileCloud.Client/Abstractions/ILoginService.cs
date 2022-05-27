@@ -1,4 +1,5 @@
-﻿using FileCloud.Shared.Models.Auth;
+﻿using FileCloud.Shared.Models;
+using FileCloud.Shared.Models.Auth;
 
 namespace FileCloudClient.Abstractions
 {
@@ -8,7 +9,11 @@ namespace FileCloudClient.Abstractions
     {
         event RedirectHandler OnRedirected;
 
-        Task<AuthenticateResponseModel> LoginAsync(AuthenticateRequestModel authData);
+        Task<bool> LoginAsync(AuthenticateRequestModel authData);
+
+        Task<bool> CheckLoginAsync(string login);
+
+        Task<bool> RegisterAsync(CreateUserModel user);
 
         void Logout();
     }

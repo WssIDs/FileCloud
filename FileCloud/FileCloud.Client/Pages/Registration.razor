@@ -1,0 +1,181 @@
+﻿@page "/Registration"
+
+@using FileCloud.Shared.Models
+@using System.Diagnostics
+@layout LoginLayout
+
+@inject ITokenUpdateService _tokenUpdateService;
+@inject ILoginService _loginService
+@inject IUserProfileStorageService _userProfileStorageService
+@inject NavigationManager _navigationManager
+
+<Loader IsLoading=@_isLoading LoadingText="Выполняется вход...">
+     <div class="container">
+        <h3 class="text-center mt-3">Регистрация</h3>
+
+        <div class="row g-5 justify-content-center">
+              <div class="col-6">
+                    <div class="row g-2">
+                        <div class="col">
+
+                            @{
+                                var disabled = string.IsNullOrEmpty(_createUserModel.UserName);
+                            }
+
+                            <button class="btn btn-outline-primary align-middle mb-2" disabled="@disabled" @onclick="CheckLoginAsync">Проверить</button>
+                        </div>
+                    </div>
+                <EditForm @ref="RegisterForm" Model=@_createUserModel OnValidSubmit="@OnSubmitAsync">
+                    <ObjectGraphDataAnnotationsValidator />
+                    <InitialValidator/>
+                    <div class="row g-2">
+                        <div class="col-md">
+                                <div class="form-floating mb-2">
+                                        @{
+                                            var id = $"{nameof(_createUserModel.UserName)}{Guid.NewGuid}";
+                                            var checkLoginResult = _createUserModel.IsChecked == true ? "is-valid" : null;
+
+                                            checkLoginResult = $"form-control {checkLoginResult}";
+                                        }
+                                        <InputTextOnInput @bind-Value="_createUserModel.UserName" class="@checkLoginResult" id="@id" placeholder="Логин"/>
+                                        <label for="@id">Логин</label>
+                                        <ValidationMessage For="@(() => _createUserModel.UserName)"/>
+                                        @if (_createUserModel.IsChecked == true)
+                                        {
+                                            <div class="valid-feedback">
+                                                Логин доступен
+                                            </div>
+                                        }
+                                        <ValidationMessage For="@(() => _createUserModel.IsChecked)"/>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-floating mb-2">
+                        @{
+                            id = $"{nameof(_createUserModel.Email)}{Guid.NewGuid}";
+                        }
+                        <InputTextOnInput type="email" @bind-Value="_createUserModel.Email" class="form-control" id="@id" placeholder="Email"/>
+                        <label for="@id">Email</label>
+                        <ValidationMessage For="@(() => _createUserModel.Email)"/>
+                    </div>
+
+                    <div class="row g-2">
+                        <div class="col-md">
+                            <div class="form-floating mb-2">
+                                @{
+                                    id = $"{nameof(_createUserModel.FirstName)}{Guid.NewGuid}";
+                                }
+                                <InputTextOnInput type="text" @bind-Value="_createUserModel.FirstName" class="form-control" id="@id" placeholder="Имя"/>
+                                <label for="@id">Имя</label>
+                                <ValidationMessage For="@(() => _createUserModel.FirstName)"/>
+                            </div>
+                        </div>
+                        <div class="col-md">
+                            <div class="form-floating mb-2">
+                               @{
+                                    id = $"{nameof(_createUserModel.LastName)}{Guid.NewGuid}";
+                                }
+                                <InputTextOnInput type="text" @bind-Value="_createUserModel.LastName" class="form-control" id="@id" placeholder="Фамилия"/>
+                                <label for="@id">Фамилия</label>
+                                <ValidationMessage For="@(() => _createUserModel.LastName)"/>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-floating mb-2">
+                        @{
+                            id = $"{nameof(_createUserModel.PhoneNumber)}{Guid.NewGuid}";
+                        }
+                        <InputTextOnInput type="tel" @bind-Value="_createUserModel.PhoneNumber" class="form-control" id="@id" placeholder="Телефон"/>
+                        <label for="@id">Телефон</label>
+                        <ValidationMessage For="@(() => _createUserModel.PhoneNumber)"/>
+                    </div>
+              
+                    <div class="form-floating mb-2">
+                        @{
+                            id = $"{nameof(_createUserModel.Password)}{Guid.NewGuid}";
+                        }
+                        <InputTextOnInput type="password" @bind-Value="_createUserModel.Password" class="form-control" id="@id" placeholder="Пароль"/>
+                        <label for="@id">Пароль</label>
+                        <ValidationMessage For="@(() => _createUserModel.Password)"/>
+                    </div>
+
+                    <div class="form-floating mb-2">
+                        @{
+                            id = $"{nameof(_createUserModel.ConfirmPassword)}{Guid.NewGuid}";
+                        }
+                        <InputTextOnInput type="password" @bind-Value="_createUserModel.ConfirmPassword" class="form-control" id="@id" placeholder="Подтверждение пароля"/>
+                        <label for="@id">Подтверждение пароля</label>
+                        <ValidationMessage For="@(() => _createUserModel.ConfirmPassword)"/>
+                    </div>
+
+                    @if(_error != null)
+                    {
+                        <div class="col-md-12">
+                            <p class="text-danger">@_error</p>
+                        </div>
+                    }
+
+                  <div class="col-md-12 text-center my-3">
+                      <button class="btn btn-outline-primary btn-lg m-1" type="submit">Регистрация</button>
+                      <a class="btn btn-outline-secondary btn-lg m-1" href="/">Назад</a>
+                  </div>
+                </EditForm>
+              </div>
+        </div>
+    </div>
+</Loader>
+
+@code {
+    private bool _isLoading;
+    private string _error;
+    private EditForm RegisterForm;
+    private CreateUserModel _createUserModel = new();
+
+    protected override void OnAfterRender(bool firstRender)
+    {
+        base.OnAfterRender(firstRender);
+
+        if(firstRender)
+        {
+            RegisterForm.EditContext.OnFieldChanged += FieldChanged;
+        }
+    }
+
+    private void FieldChanged(object sender, FieldChangedEventArgs args)
+    {
+        RegisterForm.EditContext.Validate();
+    }
+
+    private async Task OnSubmitAsync()
+    {
+        try
+        {
+            _isLoading = true;
+            _error = null;
+
+            if (await _loginService.RegisterAsync(_createUserModel))
+            {
+                _navigationManager.NavigateTo("/");
+            }
+        }
+        catch (Exception ex)
+        {
+            _isLoading = false;
+            _error = ex.Message;
+            Debug.WriteLine(ex.ToString());
+        }
+        finally
+        {
+            _isLoading = false;
+        }
+    }
+
+    private async Task CheckLoginAsync()
+    {
+        _error = null;
+        _createUserModel.IsChecked = await _loginService.CheckLoginAsync(_createUserModel.UserName);
+        RegisterForm.EditContext.Validate();
+    }
+}
