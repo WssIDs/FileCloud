@@ -11,6 +11,7 @@ namespace FileCloudClient.Validation
 
         protected override void OnParametersSet()
         {
+            CurrentEditContext.SetFieldCssClassProvider(new BootstrapValidationCssProvider());
             CurrentEditContext?.Validate();
         }
     }
