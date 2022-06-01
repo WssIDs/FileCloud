@@ -18,6 +18,13 @@ namespace FileCloud.Data.Store
         {
         }
 
+        protected override void OnModelCreating(ModelBuilder builder)
+        {
+            base.OnModelCreating(builder);
+
+            builder.Entity<PathData>().Property(x => x.Id).HasDefaultValueSql("NEWID()");
+        }
+
         public DbSet<PathData> Paths { get; set; }
 
         public DbSet<FileInfoData> Files { get; set; }

@@ -8,15 +8,30 @@ namespace FileCloud.Data.Entities
     /// </summary>
     public class FileInfoData
     {
+        /// <summary>
+        /// 
+        /// </summary>
+        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         [Key]
         [Required]
-        public Guid Id { get; set; }
+        public Guid Id { get; set; } = Guid.NewGuid();
 
+        /// <summary>
+        /// 
+        /// </summary>
         [Required]
-        public Guid Name { get; set; }
+        public Guid Name { get; set; } = Guid.NewGuid();
 
+        /// <summary>
+        /// 
+        /// </summary>
         [Required]
         public string OrginalFileName { get; set; }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        public bool IsDeleted { get; set; }
 
         [Required]
         [ForeignKey("Path")]

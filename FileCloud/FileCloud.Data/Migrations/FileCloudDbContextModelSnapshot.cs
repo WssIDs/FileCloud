@@ -28,6 +28,9 @@ namespace FileCloud.Data.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
 
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("bit");
+
                     b.Property<Guid>("Name")
                         .HasColumnType("uniqueidentifier");
 
@@ -49,7 +52,11 @@ namespace FileCloud.Data.Migrations
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
+                        .HasColumnType("uniqueidentifier")
+                        .HasDefaultValueSql("NEWID()");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("bit");
 
                     b.Property<string>("Name")
                         .IsRequired()
@@ -57,10 +64,6 @@ namespace FileCloud.Data.Migrations
 
                     b.Property<Guid?>("PathDataId")
                         .HasColumnType("uniqueidentifier");
-
-                    b.Property<string>("Root")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
 
@@ -285,9 +288,11 @@ namespace FileCloud.Data.Migrations
 
             modelBuilder.Entity("FileCloud.Data.Entities.PathData", b =>
                 {
-                    b.HasOne("FileCloud.Data.Entities.PathData", null)
+                    b.HasOne("FileCloud.Data.Entities.PathData", "RootPath")
                         .WithMany("Paths")
                         .HasForeignKey("PathDataId");
+
+                    b.Navigation("RootPath");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<System.Guid>", b =>
