@@ -32,7 +32,7 @@
                         <div class="col-md">
                                 <div class="form-floating mb-2">
                                         @{
-                                            var id = $"{nameof(_createUserModel.UserName)}{Guid.NewGuid}";
+                                            var id = $"{nameof(_createUserModel.UserName)}{Guid.NewGuid()}";
                                             var checkLoginResult = _createUserModel.IsChecked == true ? "is-valid" : null;
 
                                             checkLoginResult = $"form-control {checkLoginResult}";
@@ -53,7 +53,7 @@
 
                     <div class="form-floating mb-2">
                         @{
-                            id = $"{nameof(_createUserModel.Email)}{Guid.NewGuid}";
+                            id = $"{nameof(_createUserModel.Email)}{Guid.NewGuid()}";
                         }
                         <InputTextOnInput type="email" @bind-Value="_createUserModel.Email" class="form-control" id="@id" placeholder="Email"/>
                         <label for="@id">Email</label>
@@ -64,7 +64,7 @@
                         <div class="col-md">
                             <div class="form-floating mb-2">
                                 @{
-                                    id = $"{nameof(_createUserModel.FirstName)}{Guid.NewGuid}";
+                                    id = $"{nameof(_createUserModel.FirstName)}{Guid.NewGuid()}";
                                 }
                                 <InputTextOnInput type="text" @bind-Value="_createUserModel.FirstName" class="form-control" id="@id" placeholder="Имя"/>
                                 <label for="@id">Имя</label>
@@ -74,7 +74,7 @@
                         <div class="col-md">
                             <div class="form-floating mb-2">
                                @{
-                                    id = $"{nameof(_createUserModel.LastName)}{Guid.NewGuid}";
+                                    id = $"{nameof(_createUserModel.LastName)}{Guid.NewGuid()}";
                                 }
                                 <InputTextOnInput type="text" @bind-Value="_createUserModel.LastName" class="form-control" id="@id" placeholder="Фамилия"/>
                                 <label for="@id">Фамилия</label>
@@ -85,7 +85,7 @@
 
                     <div class="form-floating mb-2">
                         @{
-                            id = $"{nameof(_createUserModel.PhoneNumber)}{Guid.NewGuid}";
+                            id = $"{nameof(_createUserModel.PhoneNumber)}{Guid.NewGuid()}";
                         }
                         <InputTextOnInput type="tel" @bind-Value="_createUserModel.PhoneNumber" class="form-control" id="@id" placeholder="Телефон"/>
                         <label for="@id">Телефон</label>
@@ -94,7 +94,7 @@
               
                     <div class="form-floating mb-2">
                         @{
-                            id = $"{nameof(_createUserModel.Password)}{Guid.NewGuid}";
+                            id = $"{nameof(_createUserModel.Password)}{Guid.NewGuid()}";
                         }
                         <InputTextOnInput type="password" @bind-Value="_createUserModel.Password" class="form-control" id="@id" placeholder="Пароль"/>
                         <label for="@id">Пароль</label>
@@ -103,7 +103,7 @@
 
                     <div class="form-floating mb-2">
                         @{
-                            id = $"{nameof(_createUserModel.ConfirmPassword)}{Guid.NewGuid}";
+                            id = $"{nameof(_createUserModel.ConfirmPassword)}{Guid.NewGuid()}";
                         }
                         <InputTextOnInput type="password" @bind-Value="_createUserModel.ConfirmPassword" class="form-control" id="@id" placeholder="Подтверждение пароля"/>
                         <label for="@id">Подтверждение пароля</label>
