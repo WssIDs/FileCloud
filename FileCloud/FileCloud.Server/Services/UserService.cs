@@ -1,4 +1,6 @@
-﻿using FileCloud.Data.Entities;
+﻿using FileCloud.Data.Abstractions;
+using FileCloud.Data.Entities;
+using FileCloud.Data.Store;
 using FileCloud.Server.Abstractions;
 using FileCloud.Server.Models.Auth;
 using FileCloud.Shared.Models;
@@ -15,12 +17,15 @@ namespace FileCloud.Server.Services
     /// </summary>
     public class UserService : IUserService
     {
+        private readonly string _rootPath = @"C:\FileCloud";
+
         private readonly SignInManager<User> _signInManager;
         private readonly IJwtTokenManager _jwtTokenManager;
         private readonly UserManager<User> _userManager;
         private readonly RoleManager<Role> _roleManager;
+        private readonly IRepository<PathInfo> _pathInfoRepository;
 
-        public UserService(
+        public UserService(IRepository<PathInfo> pathInfoRepository,
             UserManager<User> userManager,
             RoleManager<Role> roleManager,
             IJwtTokenManager jwtTokenManager,
@@ -30,6 +35,7 @@ namespace FileCloud.Server.Services
             _roleManager = roleManager;
             _jwtTokenManager = jwtTokenManager;
             _signInManager = signInManager;
+            _pathInfoRepository = pathInfoRepository;
         }
 
         public async Task<UserModel> AuthAsync(AuthenticateRequestModel authenticateRequest)
@@ -56,6 +62,7 @@ namespace FileCloud.Server.Services
 
                 var claims = new List<Claim>()
                 {
+                    new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),
                     new Claim(JwtRegisteredClaimNames.Sub, user.UserName),
                     new Claim(JwtRegisteredClaimNames.Email, user.Email),
                 };
@@ -74,7 +81,7 @@ namespace FileCloud.Server.Services
                     }
                 }
 
-                _jwtTokenManager.GenerateJwtToken(claims, TokenConstants.TokenLifeTime);
+                _jwtTokenManager.GenerateJwtToken(claims);
 
                 return new UserModel
                 {
@@ -177,6 +184,15 @@ namespace FileCloud.Server.Services
                     if (!await _userManager.IsInRoleAsync(newUser, role.Name))
                     {
                         await _userManager.AddToRoleAsync(newUser, role.Name);
+
+                        var current = await _userManager.FindByNameAsync(newUser.UserName);
+
+                        if(Directory.Exists(_rootPath))
+                        {
+                            var path = Path.Combine(_rootPath, $"{current.UserName}_{current.Id}");
+
+                            Directory.CreateDirectory(path);
+                        }
                     }
                 }
                 else

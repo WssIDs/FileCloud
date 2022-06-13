@@ -1,11 +1,16 @@
+using FileCloud.Data.Abstractions;
 using FileCloud.Data.Entities;
+using FileCloud.Data.Repositories;
 using FileCloud.Data.Store;
 using FileCloud.Server.Abstractions;
+using FileCloud.Server.Models;
 using FileCloud.Server.Models.Auth;
 using FileCloud.Server.Services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Http.Features;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using System.Security.Claims;
@@ -14,6 +19,8 @@ using System.Text;
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
+
+builder.Services.Configure<JwtAuthSettings>(options => builder.Configuration.GetSection("JwtAuth").Bind(options));
 
 builder.Services.AddDbContext<FileCloudDbContext>(config =>
 {
@@ -39,25 +46,17 @@ builder.Services.AddControllersWithViews();
 
 builder.Services.AddScoped<IJwtTokenManager, JwtTokenManager>();
 builder.Services.AddScoped<IUserService, UserService>();
+builder.Services.AddScoped<IFileService, FileService>();
+builder.Services.AddTransient<IRepository<PathInfo>, PathInfoRepository>();
+
+builder.Services.AddSingleton<IConfigureOptions<JwtBearerOptions>, ConfigureJwtBearerOptions>();
 
 builder.Services.AddAuthentication(cfg =>
     {
         cfg.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
         cfg.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
     })
-    .AddJwtBearer(config =>
-    {
-        byte[] secretBytes = Encoding.UTF8.GetBytes(TokenConstants.SecretKey);
-        var key = new SymmetricSecurityKey(secretBytes);
-
-        config.TokenValidationParameters = new TokenValidationParameters
-        {
-            ValidIssuer = TokenConstants.Issuer,
-            ValidAudience = TokenConstants.Audience,
-            IssuerSigningKey = key,
-            ClockSkew = TimeSpan.Zero
-        };
-    });
+    .AddJwtBearer(JwtBearerDefaults.AuthenticationScheme, configureOptions: null);
 
 builder.Services.AddAuthorization();
 
@@ -91,6 +90,13 @@ builder.Services.AddSwaggerGen(cfg =>
           }
         });
 });
+
+builder.Services.Configure<FormOptions>(x =>
+{
+    x.ValueLengthLimit = int.MaxValue;
+    x.MultipartBodyLengthLimit = int.MaxValue; // In case of multipart
+});
+
 
 var app = builder.Build();
 
@@ -135,7 +141,21 @@ using (var serviceScope = app.Services.CreateScope())
                 {
                     if (!await userManager.IsInRoleAsync(user, "Administrator"))
                     {
-                        await userManager.AddToRoleAsync(user, "Administrator");
+                        var addToRoleResult = await userManager.AddToRoleAsync(user, "Administrator");
+
+                        if (addToRoleResult.Succeeded)
+                        {
+                            var current = await userManager.FindByNameAsync(user.UserName);
+
+                            var rootPath = @"C:\FileCloud";
+
+                            if (Directory.Exists(rootPath))
+                            {
+                                var path = Path.Combine(rootPath, $"{current.UserName}_{current.Id}");
+
+                                Directory.CreateDirectory(path);
+                            }
+                        }
                     }
                 }
             }

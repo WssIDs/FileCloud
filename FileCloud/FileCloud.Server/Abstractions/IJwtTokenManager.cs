@@ -8,9 +8,8 @@ namespace FileCloud.Server.Abstractions
         /// 
         /// </summary>
         /// <param name="claims"></param>
-        /// <param name="expires">expires time in seconds</param>
         /// <returns></returns>
-        void GenerateJwtToken(IEnumerable<Claim> claims, int expires);
+        void GenerateJwtToken(IEnumerable<Claim> claims);
 
         void UpdateToken();
     }

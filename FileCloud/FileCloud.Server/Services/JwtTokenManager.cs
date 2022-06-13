@@ -1,5 +1,6 @@
 ﻿using FileCloud.Server.Abstractions;
 using FileCloud.Server.Models.Auth;
+using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.Net.Http.Headers;
 using System.IdentityModel.Tokens.Jwt;
@@ -15,24 +16,26 @@ namespace FileCloud.Server.Services
     {
         private readonly IHttpContextAccessor _httpContextAccessor;
 
+        private readonly JwtAuthSettings _jwtAuthSettings;
+
         /// <summary>
         /// 
         /// </summary>
         /// <param name="httpContextAccessor"></param>
-        public JwtTokenManager(IHttpContextAccessor httpContextAccessor)
+        public JwtTokenManager(IHttpContextAccessor httpContextAccessor, IOptions<JwtAuthSettings> options)
         {
             _httpContextAccessor = httpContextAccessor;
+            _jwtAuthSettings = options.Value;
         }
 
         /// <summary>
         /// 
         /// </summary>
         /// <param name="claims"></param>
-        /// <param name="expires"></param>
         /// <returns></returns>
-        public void GenerateJwtToken(IEnumerable<Claim> claims, int expires)
+        public void GenerateJwtToken(IEnumerable<Claim> claims)
         {
-            byte[] secretBytes = Encoding.UTF8.GetBytes(TokenConstants.SecretKey);
+            byte[] secretBytes = Encoding.UTF8.GetBytes(_jwtAuthSettings.SecretKey);
             var key = new SymmetricSecurityKey(secretBytes);
 
             var signingCredentials = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
@@ -40,14 +43,14 @@ namespace FileCloud.Server.Services
             var currenttime = DateTime.UtcNow;
 
             var token = new JwtSecurityToken(
-                TokenConstants.Issuer,
-                TokenConstants.Audience,
+                _jwtAuthSettings.Issuer,
+                _jwtAuthSettings.Audience,
                 claims,
                 notBefore: currenttime,
-                expires: currenttime.AddSeconds(expires),
+                expires: currenttime.AddSeconds(_jwtAuthSettings.TokenLifeTime),
                 signingCredentials: signingCredentials);
 
-            _httpContextAccessor.HttpContext.Response.Headers.Add("JwtTokenExpires", expires.ToString());
+            _httpContextAccessor.HttpContext.Response.Headers.Add("JwtTokenExpires", _jwtAuthSettings.TokenLifeTime.ToString());
             _httpContextAccessor.HttpContext.Response.Headers.Add("JwtToken", new JwtSecurityTokenHandler().WriteToken(token));
         }
 
@@ -62,9 +65,9 @@ namespace FileCloud.Server.Services
             var jwtToken = new JwtSecurityTokenHandler().ReadJwtToken(token);
 
             // seconds
-            var expires = TokenConstants.TokenLifeTime;
+            //var expires = _jwtAuthSettings.TokenLifeTime;
 
-            GenerateJwtToken(jwtToken.Claims, expires);
+            GenerateJwtToken(jwtToken.Claims);
         }
     }
 }
